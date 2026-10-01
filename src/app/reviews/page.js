@@ -9,6 +9,12 @@ export default function ReviewsPage () {
     const [reviews, setReviews] = useState([]);
     const [isPending, setIsPending] = useState(true);
     const [error, setError] = useState(null);
+    const [deletingId, setDeleteId] = useState(null);
+    const [editingId, setEditingId] = useState(null);
+    const [editRating, setEditRating] = useState("");
+    const [editReview, setEditReview] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
+    const [sortBy, setSortBy] = useState("latest");
 
     useEffect(() => {
         let ignore = false;
@@ -36,11 +42,7 @@ export default function ReviewsPage () {
             ignore = true;
         };
     }, []);
-    const [deletingId, setDeleteId] = useState(null);
-    const [editingId, setEditingId] = useState(null);
-    const [editRating, setEditRating] = useState("");
-    const [editReview, setEditReview] = useState("");
-    const [isSaving, setIsSaving] = useState(false);
+ 
 
     const handleEdit = (record) => {
         setEditingId(record.id);
@@ -93,6 +95,15 @@ export default function ReviewsPage () {
         }
     };
 
+    const sortedReviews = [...reviews].sort((a,b) => {
+        if (sortBy === "rating") {
+            return b.rating - a.rating;
+        }
+
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    }); 
+
+
     return (
         <main className="home-page records-page">
             <header className="home-header">
@@ -104,6 +115,18 @@ export default function ReviewsPage () {
 
                 <a className="records-link" href="/" target="_blank">영화 검색하러 가기 <span aria-hidden="true">↗</span></a>
             </header>
+                <div className="sort-controls">
+                    <label htmlFor="review-sort">정렬하기</label>
+
+                    <select
+                        id="review-sort"
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                    >
+                        <option value="latest">최신순</option>
+                        <option value="rating">평점 높은 순</option>
+                    </select>
+                </div>
             {isPending ? (
                 <p className="records-state" role="status">기록을 불러오는 중입니다...</p>
             ) : error ? (
@@ -112,7 +135,7 @@ export default function ReviewsPage () {
                 <p className="records-state">아직 저장한 감상 기록이 없습니다.</p>
             ) : (
                 <ul className="records-list">
-                    {reviews.map((record) => (
+                    {sortedReviews.map((record) => (
                         <li className="record-card" key = {record.id}>
                             <MoviePoster src={record.posterUrl} title={record.title} />
                             <h2>

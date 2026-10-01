@@ -226,6 +226,8 @@ a {
 .review-cancel:hover { background: var(--accent-hover); }
 
 .records-page .home-header h1 { font-size: clamp(30px, 4vw, 46px); letter-spacing: -1.5px; }
+.records-page .home-header { flex-wrap: wrap; }
+.records-page .home-header > .records-link { margin-left: auto; }
 .records-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; list-style: none; }
 .record-card { display: flex; flex-direction: column; gap: 14px; min-width: 0; padding: 26px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); box-shadow: 0 6px 20px rgb(39 54 77 / 4%); overflow-wrap: anywhere; }
 .record-card h2 { font-size: 21px; line-height: 1.45; }
@@ -233,7 +235,7 @@ a {
 .record-genre { color: var(--muted); font-size: 13px; line-height: 1.6; }
 .record-openDt { color: var(--muted); font-size: 13px; line-height: 1.6; }
 .record-rating { align-self: flex-start; padding: 7px 12px; border-radius: 8px; background: var(--soft-blue); color: var(--accent-ink); font-size: 14px; font-weight: 700; }
-.record-text { padding: 16px 0; font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
+.record-text { padding: 16px 0; font-size: 14.5px; line-height: 1.8; white-space: pre-wrap; }
 .record-date { color: var(--muted); font-size: 12px; }
 .record-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .record-footer { margin-top: auto; padding-top: 18px; border-top: 1px solid var(--border); }
@@ -245,6 +247,49 @@ a {
 .record-actions button:focus-visible { outline: 3px solid #5378c2; outline-offset: 3px; }
 .record-edit { display: grid; gap: 18px; }
 .records-state { padding: 48px 24px; border: 1px dashed #b7c7df; border-radius: 20px; background: var(--surface); color: var(--muted); text-align: center; line-height: 1.7; }
+
+.sort-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 24px auto;
+  padding: 4px 8px 4px 12px;
+  border: 1px solid #c4d1e9;
+  border-radius: 10px;
+  background: var(--soft-blue);
+}
+
+.sort-controls label {
+  color: var(--accent-ink);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sort-controls select {
+  padding: 6px 4px;
+  border: none;
+  border-radius: 6px;
+  background: var(--soft-blue);
+  color: var(--accent-ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 110px;
+  cursor: pointer;
+}
+
+.sort-controls select:hover {
+  background: #dbe5f7;
+}
+
+.sort-controls select:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
 
 @media (max-width: 900px) {
   .movie-list, .records-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
