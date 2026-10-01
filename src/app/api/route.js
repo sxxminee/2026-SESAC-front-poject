@@ -17,7 +17,7 @@ export async function GET(request) {
     { collection: "kmdb_new2", 
         detail: "Y", 
         title, 
-        listCount: "30", 
+        listCount: "50", 
         ServiceKey: key }
     );
 

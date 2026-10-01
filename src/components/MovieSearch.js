@@ -105,7 +105,7 @@ export default function MovieSearch() {
         </button>
         </div>
      </form>
-     <p className="search-source">KMDb 영화 정보 · 검색 결과 최대 30편</p>
+     <p className="search-source">KMDb 영화 정보 · 검색 결과 최대 50편</p>
      {searchError && <p className="records-state" role="alert">{searchError}</p>}
 
      <div className = "movie-list">

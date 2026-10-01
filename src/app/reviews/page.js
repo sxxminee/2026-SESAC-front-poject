@@ -1,7 +1,7 @@
 'use client'
 
-
 import { useState } from "react";
+import Image from "next/image";
 import MoviePoster from "@/components/MoviePoster";
 import { reviewApi } from "../api/reviewApi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -109,13 +109,16 @@ export default function ReviewsPage () {
     return (
         <main className="home-page records-page">
             <header className="home-header">
-                <div>
-                    <p className="home-eyebrow">MY MOVIE LOG</p>
-                    <h1>나의 영화 <span>기록</span></h1>
+                <div className="page-brand">
+                    <Image className="page-logo" src="/img/page-logo.png" alt="" width={112} height={84} priority />
+                    <div className="page-brand-text">
+                    <p className="home-eyebrow">나의 영화 기록</p>
+                    <h1>MY MOVIE <span>LOG</span></h1>
                     <p className="home-subtitle"></p>
+                    </div>
                 </div>
 
-                <a className="records-link" href="/" >영화 검색하러 가기 <span aria-hidden="true">↗</span></a>
+                <a className="records-link" href="/">영화 검색하러 가기 <span aria-hidden="true">↗</span></a>
             </header>
                 <div className="sort-controls">
                     <label htmlFor="review-sort"> 정렬하기 </label>
