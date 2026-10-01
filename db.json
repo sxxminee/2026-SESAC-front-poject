@@ -1,0 +1,109 @@
+{
+  "reviews": [
+    {
+      "movieCd": "20050118",
+      "movieNm": "릴리 슈슈의 모든 것",
+      "movieNmEn": "All About Lily Chou-Chou",
+      "director": "이와이 슌지",
+      "openDt": "20050623",
+      "genre": "드라마",
+      "nation": "일본",
+      "rating": 4,
+      "review": "정신건강이 상태일 때 봐야 되는 영화 .. 힘들 때 보지 마세요.. 근데 트랙리스트는 너무 사랑함..",
+      "createdAt": "2026-09-28T00:26:08.773Z",
+      "id": "QpGmBhhKYAI"
+    },
+    {
+      "movieCd": "20246777",
+      "movieNm": "더 폴: 디렉터스 컷",
+      "movieNmEn": "The Fall",
+      "director": "타셈 싱",
+      "openDt": "20241225",
+      "genre": "드라마,판타지",
+      "nation": "영국",
+      "rating": 5,
+      "review": "리페이스 얼굴 맨날 보고 싶네..",
+      "createdAt": "2026-09-30T00:26:55.276Z",
+      "id": "F7Zv08H8Dzg"
+    },
+    {
+      "movieCd": "20228277",
+      "movieNm": "더 메뉴",
+      "movieNmEn": "The Menu",
+      "director": "마크 미로드",
+      "openDt": "20221207",
+      "genre": "스릴러",
+      "nation": "미국",
+      "rating": 4,
+      "review": "내가 뭘 본거지..? 한 분야에 미치면 저렇게 되는듯 ㅋ",
+      "createdAt": "2026-09-30T01:10:10.626Z",
+      "id": "aTVQvLI84x8"
+    },
+    {
+      "movieCd": "20247397",
+      "movieNm": "존 오브 인터레스트",
+      "movieNmEn": "The Zone of Interest",
+      "director": "조나단 글레이저",
+      "openDt": "20240605",
+      "genre": "드라마",
+      "nation": "미국",
+      "rating": 5,
+      "review": "이런게 찐 공포지.. 보는 내내 역겨웠음",
+      "createdAt": "2026-09-30T01:14:43.841Z",
+      "id": "FrH4ftkuIRs"
+    },
+    {
+      "movieCd": "20224468",
+      "movieNm": "애프터 양",
+      "movieNmEn": "After Yang",
+      "director": "코고나다",
+      "openDt": "20220601",
+      "genre": "드라마,SF",
+      "nation": "미국",
+      "rating": 4,
+      "review": "양의 시선으로 가족들을 보게 돼,, 엉엉 울고싶은데 초반 댄스신이 너무 커염띠기 ㅜㅜ..",
+      "createdAt": "2026-09-30T01:54:50.694Z",
+      "id": "H7Q_XZ0SMz4"
+    },
+    {
+      "movieCd": "20246318",
+      "movieNm": "해피엔드",
+      "movieNmEn": "Happyend",
+      "director": "소라 네오",
+      "openDt": "20250430",
+      "genre": "드라마",
+      "nation": "일본",
+      "rating": 3,
+      "review": "유스케 유키마츠를 알게 해준 영화,, 사카모토씨 아들 답게 사운드 트랙이 기깔나다..",
+      "createdAt": "2026-09-30T04:24:18.035Z",
+      "id": "kaCXCv9TpE0"
+    },
+    {
+      "movieCd": "20249507",
+      "movieNm": "극장판 하이큐!! 쓰레기장의 결전",
+      "movieNmEn": "Haikyu!!: The Dumpster Battle",
+      "director": "미츠나카 스스무",
+      "openDt": "20240515",
+      "genre": "애니메이션",
+      "nation": "일본",
+      "rating": 4,
+      "review": "스에 오렌지만 들으면 눈물이 나는 병에 걸려버림 .. 일단 난 켄마 //>..<",
+      "createdAt": "2026-09-30T05:35:06.710Z",
+      "id": "Y0HY-yQ2omU"
+    },
+    {
+      "movieCd": "20250428",
+      "movieNm": "센티멘탈 밸류",
+      "movieNmEn": "Sentimental Value",
+      "director": "요아킴 트리에",
+      "openDt": "20260218",
+      "genre": "드라마",
+      "nation": "노르웨이",
+      "rating": 4.5,
+      "review": "아름다움.. 그냥 다 아름다움.. 그치만 아름다움 뒤에 오는 가족의 다정함과 슬픔 .. 가족 너무 어렵다.. 다르면 달라서 싫고 비슷하면 동족혐오가 오고 ..",
+      "createdAt": "2026-09-30T05:43:48.981Z",
+      "id": "HCFAP6lbEKU"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

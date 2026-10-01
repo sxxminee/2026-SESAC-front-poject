@@ -1,69 +1,22 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import MovieSearch from "@/components/MovieSearch";
+
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.js</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+ return (
+   <main className="home-page">
+     <header className="home-header">
+       <div>
+         <p className="home-eyebrow">영화 많이 보는게 숨긴다고 숨겨지는 것도 아니고 ... </p>
+         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+         <h1><a href = "/">Movie <span>Log</span></a></h1>
+         <p className="home-subtitle">나만의 영화 감상 기록</p>
+       </div>
+       <nav className="home-actions" aria-label="영화 기록 및 검색">
+         <a className="records-link" href="/reviews" target="_blank">나의 기록 보기 <span aria-hidden="true">↗</span></a>
+         <a className="records-link movie-finder-link" href="https://pedia.watcha.com/ko/search" target="_blank">영화 제목 찾아보기 <span aria-hidden="true">↗</span></a>
+       </nav>
+     </header>
+     <MovieSearch/>
+   </main>
+ );
 }
