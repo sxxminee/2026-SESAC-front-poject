@@ -4,22 +4,65 @@
 import { useState } from "react";
 import MoviePoster from "./MoviePoster";
 import { reviewApi } from "@/app/api/reviewApi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
+
  const [rating, setRating] = useState("");
  const [review, setReview] = useState("");
- const [isSaving, setIsSaving] = useState(false);
+
+ const queryClient = useQueryClient();
+
+ const createMutation = useMutation ({
+    mutationFn : async (newReview) => {
+        const savedReviews = await reviewApi.getReviews();
+        const alreadyRecorded = savedReviews.some((record) => record.docId === movie.DOCID);
+
+        if (alreadyRecorded) {
+        const error = new Error("이미 기록한 영화 입니다. 나의 기록에서 수정해주세요.");
+       
+        error.code = "DUPLICATE_REVIEW";
+        throw error;
+        }
+
+     return reviewApi.createReview(newReview);
+    },
+
+    onSuccess: async () => {
+        await queryClient.invalidateQueries({
+            queryKey : ["reviews"],
+        });
+
+        alert ("감상 기록이 저장 되었습니다.");
+
+        setRating("");
+        setReview("");
+        onSaveSuccess();
+    },
+
+    onError : (error) =>{
+        if(error.code === "DUPLICATE_REVIEW") {
+            alert(error.message);
+            onCancel();
+            return;
+        }
+
+        alert ("저장에 실패 했습니다.");
+    },
+});
+
+ const isSaving = createMutation.isPending;
 
  const title = (movie.title || "").replace(/!HS|!HE/g, "").replace(/\s+/g, " ").trim();
  const directorNm = (movie.directors?.director ?? []).map((director) => director.directorNm).join(", ");
  const actorNames = (movie.actors?.actor ?? []).map((actor) => actor.actorNm);
  const posterUrl = (movie.posters || "").split("|")[0].trim();
 
- const handleSubmit = async (e) => {
+ const handleSubmit = (e) => {
    e.preventDefault();
-   if (isSaving) return;
 
+   if (isSaving) return;
 
    const numericRating = Number(rating);
    if ( !rating ||
@@ -52,34 +95,7 @@ export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
     createdAt: new Date().toISOString(),
     };
 
-
-   setIsSaving(true);
-   try {
-     const savedReviews = await reviewApi.getReviews();
-
-     const alreadyRecorded = savedReviews.some((record) => record.docId === movie.DOCID);
-
-     if (alreadyRecorded) {
-        alert("이미 기록한 영화 입니다. 나의 기록에서 수정해주세요.");
-        onCancel();
-        return;
-     }
-
-     const result = await reviewApi.createReview(newReview);
-
-     console.log("저장 완료:", result);
-
-
-     alert("감상 기록이 저장되었습니다.");
-     setRating("");
-     setReview("");
-     onSaveSuccess();
-   } catch (error) {
-     console.error(error);
-     alert("저장에 실패했습니다.");
-   } finally {
-     setIsSaving(false);
-   }
+   createMutation.mutate(newReview);
  };
 
 

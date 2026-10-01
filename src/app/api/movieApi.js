@@ -4,7 +4,6 @@ export const searchMovies = async (title) => {
   
 const data = await response.json();
   if (!response.ok) throw new Error(data.error || '영화 검색에 실패했습니다.');
-  // route.js는 KMDb 원본 응답을 전달하므로 그 안의 영화 배열을 꺼냅니다.
   const collection = data.Data?.[0];
   if (Number(data.TotalCount) === 0 || Number(collection?.TotalCount) === 0) {
     return [];

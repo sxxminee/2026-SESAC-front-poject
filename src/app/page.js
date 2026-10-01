@@ -12,7 +12,7 @@ export default function Home() {
          <p className="home-subtitle">나만의 영화 감상 기록</p>
        </div>
        <nav className="home-actions" aria-label="영화 기록 및 검색">
-         <a className="records-link" href="/reviews" target="_blank">나의 기록 보기 <span aria-hidden="true">↗</span></a>
+         <a className="records-link" href="/reviews" >나의 기록 보기 <span aria-hidden="true">↗</span></a>
          <a className="records-link movie-finder-link" href="https://pedia.watcha.com/ko/search" target="_blank">영화 제목 찾아보기 <span aria-hidden="true">↗</span></a>
        </nav>
      </header>

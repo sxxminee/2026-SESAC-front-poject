@@ -1,48 +1,24 @@
 'use client'
 
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MoviePoster from "@/components/MoviePoster";
 import { reviewApi } from "../api/reviewApi";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 
 export default function ReviewsPage () {
-    const [reviews, setReviews] = useState([]);
-    const [isPending, setIsPending] = useState(true);
-    const [error, setError] = useState(null);
-    const [deletingId, setDeleteId] = useState(null);
+
+    const queryClient = useQueryClient();
+    const {data : reviews = [], isPending, error} = useQuery({
+        queryKey : ['reviews'],
+        queryFn : reviewApi.getReviews
+    });
+
     const [editingId, setEditingId] = useState(null);
     const [editRating, setEditRating] = useState("");
     const [editReview, setEditReview] = useState("");
-    const [isSaving, setIsSaving] = useState(false);
     const [sortBy, setSortBy] = useState("latest");
-
-    useEffect(() => {
-        let ignore = false;
-
-        const fetchReviews = async () => {
-            try {
-                const data = await reviewApi.getReviews();
-                if (!ignore) {
-                    setReviews(data);
-                }
-            } catch (error) {
-                if (!ignore) {
-                    setError(error);
-                }
-            } finally {
-                if (!ignore) {
-                    setIsPending(false);
-                }
-            }
-        };
-
-        fetchReviews();
-
-        return () => {
-            ignore = true;
-        };
-    }, []);
- 
 
     const handleEdit = (record) => {
         setEditingId(record.id);
@@ -50,56 +26,82 @@ export default function ReviewsPage () {
         setEditReview(record.review);
     };
 
-    const handleUpdate = async (e, id) => {
+    const updateMutation = useMutation ({
+        mutationFn : ({id, values}) => {
+            return reviewApi.updateReview(id, values);
+        },
+
+        onSuccess : async() => {
+            await queryClient.invalidateQueries({queryKey:["reviews"]});
+
+            setEditingId(null);
+        },
+
+        onError : (error) => {
+            alert(error.message);
+        },
+    });
+    const isSaving = updateMutation.isPending;
+
+    const handleUpdate = (e, id) => {
         e.preventDefault();
+
         if (isSaving) return;
 
         const rating = Number(editRating);
-        if (!Number.isInteger(rating*2) ||
-            rating < 0.5 || rating > 5 ||
-            !editReview.trim()) {
+
+        if (
+            !Number.isInteger(rating * 2) ||
+            rating < 0.5 ||
+            rating > 5 ||
+            !editReview.trim()
+        ) {
             alert("평점과 한줄평을 입력해주세요.");
             return;
         }
 
-        setIsSaving(true);
-        try {
-            const updatedReview = await reviewApi.updateReview(id, {
-                rating,
-                review: editReview.trim(),
-            });
-            setReviews((prev) =>
-                prev.map((record) => record.id === id ? updatedReview : record)
-            );
-            setEditingId(null);
-        } catch (error) {
-            alert(error.message);
-        } finally {
-            setIsSaving(false);
-        }
+        updateMutation.mutate({
+            id,
+            values: {
+            rating,
+            review: editReview.trim(),
+            },
+        });
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm (" 이 기록을 삭제 할까요? ")) return ;
 
-        setDeleteId(id);
+    const deleteMutation = useMutation({
+        mutationFn : (id) => {
+            return reviewApi.deleteReview(id);
+        },
 
-        try {
-            await reviewApi.deleteReview(id);
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey:["reviews"],
+            });
+        },
 
-            setReviews((prev) => prev.filter((record) => record.id !== id));
-        } catch (error) {
+        onError : (error) => {
             alert(error.message);
-        } finally {
-            setDeleteId(null);
-        }
+        },
+    });
+
+    const deletingId = deleteMutation.isPending ? deleteMutation.variables : null;
+
+    const handleDelete = (id) => {
+        if (deleteMutation.isPending) return;
+
+        if (!window.confirm("이 기록을 삭제할까요?")) return;
+
+        deleteMutation.mutate(id);
     };
 
     const sortedReviews = [...reviews].sort((a,b) => {
-        if (sortBy === "rating") {
+        if (sortBy === "ratingHigh") {
             return b.rating - a.rating;
+        } else if (sortBy === "ratingLow") {
+            return a.rating - b.rating;
         }
-
         return new Date(b.createdAt) - new Date(a.createdAt);
     }); 
 
@@ -113,10 +115,10 @@ export default function ReviewsPage () {
                     <p className="home-subtitle"></p>
                 </div>
 
-                <a className="records-link" href="/" target="_blank">영화 검색하러 가기 <span aria-hidden="true">↗</span></a>
+                <a className="records-link" href="/" >영화 검색하러 가기 <span aria-hidden="true">↗</span></a>
             </header>
                 <div className="sort-controls">
-                    <label htmlFor="review-sort">정렬하기</label>
+                    <label htmlFor="review-sort"> 정렬하기 </label>
 
                     <select
                         id="review-sort"
@@ -124,7 +126,8 @@ export default function ReviewsPage () {
                         onChange={(e) => setSortBy(e.target.value)}
                     >
                         <option value="latest">최신순</option>
-                        <option value="rating">평점 높은 순</option>
+                        <option value="ratingHigh">평점 높은 순</option>
+                        <option value="ratingLow">평점 낮은 순</option>
                     </select>
                 </div>
             {isPending ? (

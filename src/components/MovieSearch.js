@@ -5,44 +5,58 @@ import { useState , useRef, useEffect } from "react";
 import ReviewForm from "./ReviewForm";
 import MoviePoster from "./MoviePoster";
 import { searchMovies } from "@/app/api/movieApi";
-
+import { useQuery,useQueryClient } from "@tanstack/react-query";
 
 export default function MovieSearch() {
  const [keyword, setKeyword] = useState("");
- const [movies, setMovies] = useState([]);
+ const [searchKeyword, setSearchKeyword] = useState("");
  const [selectedMovie, setSelectedMovie] = useState(null);
- const reviewFormRef = useRef(null);
- const [isSearching, setIsSearching] = useState(false);
- const [searchError, setSearchError] = useState("");
 
+ const reviewFormRef = useRef(null);
+ const queryClient = useQueryClient();
+
+ const {
+    data = [],
+    isFetching: isSearching,
+    error,
+    } = useQuery({
+        queryKey: ["movies", searchKeyword],
+        queryFn: () => searchMovies(searchKeyword),
+        enabled: false,
+        retry: false,
+ });
+
+ const movies = searchKeyword ? data : [];
+ const searchError = error?.message ?? "";
 
  const handleSearch = async () => {
-   if (!keyword.trim() || isSearching) return;
+    const submittedKeyword = keyword.trim();
 
-   const searchKeyword = keyword.trim();
-   setIsSearching(true);
-   setSearchError("");
-   setSelectedMovie(null);
+    if (!submittedKeyword || isSearching) return;
 
-   try {
-     const result = await searchMovies(searchKeyword);
+    setSearchKeyword(submittedKeyword);
+    setSelectedMovie(null);
 
-     if (result.length ===0) {
+    try {
+        const result = await queryClient.fetchQuery({
+        queryKey: ["movies", submittedKeyword],
+        queryFn: () => searchMovies(submittedKeyword),
+        staleTime: 0,
+        retry: false,
+        });
+
+        setKeyword("");
+
+        if (result.length === 0) {
         alert("검색 결과가 없습니다.");
-        setKeyword("");
-        setMovies([]);
+
+        setSearchKeyword("");
         setSelectedMovie(null);
-        return;
-     } else {
-        setMovies(result);
-        setKeyword("");
+        }
+    } catch (error) {
+        console.error("영화 검색 실패:", error);
     }
-   } catch (error) {
-     setSearchError(error.message);
-   } finally {
-     setIsSearching(false);
-   }
- };
+    };
 
 
  const handleSelect = (movie) => {
@@ -50,20 +64,20 @@ export default function MovieSearch() {
    // console.log(movie);
  };
 
-useEffect(() => {
+ useEffect(() => {
     if (selectedMovie) {
         reviewFormRef.current?.scrollIntoView({
             behavior : "smooth",
             // block : "start",
         });
     }
-},[selectedMovie]);
+ },[selectedMovie]);
 
 
  const handleSaveSuccess = () => {
-   setKeyword("");
-   setMovies([]);
-   setSelectedMovie(null);
+    setKeyword("");
+    setSearchKeyword("");
+    setSelectedMovie(null);
  };
 
  const handleReviewCancel = () => {

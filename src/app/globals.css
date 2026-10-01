@@ -267,6 +267,7 @@ a {
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
+  padding:2px;
 }
 
 .sort-controls select {
