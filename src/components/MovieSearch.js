@@ -1,8 +1,10 @@
 "use client";
 
 import { useState , useRef, useEffect } from "react";
-import { searchMovies } from "../api/movieApi";
+
 import ReviewForm from "./ReviewForm";
+import MoviePoster from "./MoviePoster";
+import { searchMovies } from "@/app/api/movieApi";
 
 
 export default function MovieSearch() {
@@ -10,12 +12,17 @@ export default function MovieSearch() {
  const [movies, setMovies] = useState([]);
  const [selectedMovie, setSelectedMovie] = useState(null);
  const reviewFormRef = useRef(null);
+ const [isSearching, setIsSearching] = useState(false);
+ const [searchError, setSearchError] = useState("");
 
 
  const handleSearch = async () => {
-   if (!keyword.trim()) return;
+   if (!keyword.trim() || isSearching) return;
 
    const searchKeyword = keyword.trim();
+   setIsSearching(true);
+   setSearchError("");
+   setSelectedMovie(null);
 
    try {
      const result = await searchMovies(searchKeyword);
@@ -31,7 +38,9 @@ export default function MovieSearch() {
         setKeyword("");
     }
    } catch (error) {
-     console.error(error);
+     setSearchError(error.message);
+   } finally {
+     setIsSearching(false);
    }
  };
 
@@ -49,7 +58,7 @@ useEffect(() => {
         });
     }
 },[selectedMovie]);
- 
+
 
  const handleSaveSuccess = () => {
    setKeyword("");
@@ -70,30 +79,35 @@ useEffect(() => {
         <div className="search-controls">
         <input
         id="movie-keyword"
+        disabled={isSearching}
         type="text"
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
         placeholder="영화 제목을 입력하세요"
         />
 
-        <button type="submit">
-        검색
+        <button type="submit" disabled={isSearching}>
+        {isSearching ? "검색 중..." : "검색"}
         </button>
         </div>
      </form>
+     <p className="search-source">KMDb 영화 정보 · 검색 결과 최대 30편</p>
+     {searchError && <p className="records-state" role="alert">{searchError}</p>}
 
      <div className = "movie-list">
        {movies.map((movie) => (
-         <div className = "movie-card" key={movie.movieCd}>
-           <h3>{movie.movieNm}</h3>
-           <p>영문명: {movie.movieNmEn}</p>
-           <p>제작연도: {movie.prdtYear}</p>
+         <div className = "movie-card" key={movie.DOCID}>
+           <MoviePoster src={(movie.posters || "").split("|")[0].trim()} title={(movie.title || "").replace(/!HS|!HE/g, "").trim()} />
+           <h3>{(movie.title || "").replace(/!HS|!HE/g, "").trim()}</h3>
+           <p>영문명: {movie.titleEng}</p>
+           <p>제작연도: {movie.prodYear}</p>
            <p>
-             감독: {(movie.directors ?? []).map((director) => director.peopleNm).join(", ") || "정보 없음"}
+             감독: {(movie.directors?.director ?? []).map((director) => director.directorNm).join(", ") || "정보 없음"}
            </p>
-           <p>장르 : {movie.repGenreNm}</p>
+           <p>장르 : {movie.genre}</p>
+           <p>배우: {(movie.actors?.actor ?? []).slice(0, 5).map((actor) => actor.actorNm).join(", ") || "정보 없음"}</p>
 
-           <button onClick={() => handleSelect(movie)}>
+           <button disabled={isSearching} onClick={() => handleSelect(movie)}>
              기록하기
            </button>
          </div>
@@ -103,7 +117,8 @@ useEffect(() => {
 
      {selectedMovie && (
         <div className="review-anchor" ref = {reviewFormRef}>
-            <ReviewForm 
+            <ReviewForm
+                key={selectedMovie.DOCID}
                 movie={selectedMovie}
                 onSaveSuccess={handleSaveSuccess}
                 onCancel = {handleReviewCancel}

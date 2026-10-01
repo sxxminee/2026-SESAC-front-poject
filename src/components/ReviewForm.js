@@ -2,19 +2,27 @@
 
 
 import { useState } from "react";
-import { reviewApi } from "../api/reviewApi";
+import MoviePoster from "./MoviePoster";
+import { reviewApi } from "@/app/api/reviewApi";
 
 
 export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
  const [rating, setRating] = useState("");
  const [review, setReview] = useState("");
+ const [isSaving, setIsSaving] = useState(false);
+
+ const title = (movie.title || "").replace(/!HS|!HE/g, "").replace(/\s+/g, " ").trim();
+ const directorNm = (movie.directors?.director ?? []).map((director) => director.directorNm).join(", ");
+ const actorNames = (movie.actors?.actor ?? []).map((actor) => actor.actorNm);
+ const posterUrl = (movie.posters || "").split("|")[0].trim();
 
  const handleSubmit = async (e) => {
    e.preventDefault();
+   if (isSaving) return;
 
 
    const numericRating = Number(rating);
-   if ( !rating || 
+   if ( !rating ||
         !review.trim() ||
         numericRating < 0.5 ||
         numericRating > 5 ||
@@ -22,31 +30,46 @@ export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
     ) {
      alert("별점과 한줄평을 모두 입력해주세요.");
      return;
-   } 
+   }
 
 
     const newReview = {
-    movieCd: movie.movieCd,
-    movieNm: movie.movieNm,
-    movieNmEn: movie.movieNmEn ?? "",
-    director: (movie.directors ?? [])
-        .map((director) => director.peopleNm)
-        .join(", "),
-    openDt: movie.openDt ?? "",
-    genre: movie.genreAlt ?? "",
-    nation: movie.nationAlt ?? "",
+    source: "KMDB",
+    docId: movie.DOCID,
+    movieId: movie.movieId,
+    movieSeq: movie.movieSeq,
+    title,
+    titleEng: movie.titleEng,
+    prodYear: movie.prodYear,
+    directorNm,
+    actorNames,
+    posterUrl,
+    repRlsDate: movie.repRlsDate,
+    genre: movie.genre,
+    nation: movie.nation,
     rating: Number(rating),
     review: review.trim(),
     createdAt: new Date().toISOString(),
     };
 
 
+   setIsSaving(true);
    try {
+     const savedReviews = await reviewApi.getReviews();
+
+     const alreadyRecorded = savedReviews.some((record) => record.docId === movie.DOCID);
+
+     if (alreadyRecorded) {
+        alert("이미 기록한 영화 입니다. 나의 기록에서 수정해주세요.");
+        onCancel();
+        return;
+     }
+
      const result = await reviewApi.createReview(newReview);
 
      console.log("저장 완료:", result);
-          
-        
+
+
      alert("감상 기록이 저장되었습니다.");
      setRating("");
      setReview("");
@@ -54,6 +77,8 @@ export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
    } catch (error) {
      console.error(error);
      alert("저장에 실패했습니다.");
+   } finally {
+     setIsSaving(false);
    }
  };
 
@@ -69,10 +94,12 @@ export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
 
 
      <div className="review-movie-info">
+       <MoviePoster src={posterUrl} title={title} />
        <span>선택한 영화</span>
-       <h3>{movie.movieNm}</h3>
-       <p>{movie.prdtYear || "제작연도 정보 없음"}</p>
-       <p>{(movie.directors ?? []).map((director) => director.peopleNm).join(", ") || "정보 없음"}</p>
+       <h3>{title}</h3>
+       <p>{movie.prodYear || "제작연도 정보 없음"}</p>
+       <p>감독: {directorNm || "정보 없음"}</p>
+       <p>배우: {actorNames.slice(0, 5).join(", ") || "정보 없음"}</p>
      </div>
 
 
@@ -83,6 +110,7 @@ export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
 
          <select
            id="review-rating"
+           disabled={isSaving}
            value={rating}
            onChange={(e) => setRating(e.target.value)}
          >
@@ -107,6 +135,7 @@ export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
 
          <textarea
            id="review-text"
+           disabled={isSaving}
            rows={4}
            value={review}
            onChange={(e) => setReview(e.target.value)}
@@ -115,8 +144,8 @@ export default function ReviewForm({ movie, onSaveSuccess, onCancel }) {
        </div>
 
 
-       <button className="review-save" type="submit">감상 기록 저장</button>
-       <button className="review-cancel" type="button" onClick={onCancel}>취소</button>
+       <button className="review-save" type="submit" disabled={isSaving}>{isSaving ? "저장 중..." : "감상 기록 저장"}</button>
+       <button className="review-cancel" type="button" disabled={isSaving} onClick={onCancel}>취소</button>
      </form>
     </div>
    </section>

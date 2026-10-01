@@ -1,7 +1,9 @@
 'use client'
 
-import { reviewApi } from "@/api/reviewApi";
+
 import { useEffect, useState } from "react";
+import MoviePoster from "@/components/MoviePoster";
+import { reviewApi } from "../api/reviewApi";
 
 export default function ReviewsPage () {
     const [reviews, setReviews] = useState([]);
@@ -51,8 +53,8 @@ export default function ReviewsPage () {
         if (isSaving) return;
 
         const rating = Number(editRating);
-        if (!Number.isInteger(rating*2) || 
-            rating < 0.5 || rating > 5 || 
+        if (!Number.isInteger(rating*2) ||
+            rating < 0.5 || rating > 5 ||
             !editReview.trim()) {
             alert("평점과 한줄평을 입력해주세요.");
             return;
@@ -99,7 +101,7 @@ export default function ReviewsPage () {
                     <h1>나의 영화 <span>기록</span></h1>
                     <p className="home-subtitle"></p>
                 </div>
-                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+
                 <a className="records-link" href="/" target="_blank">영화 검색하러 가기 <span aria-hidden="true">↗</span></a>
             </header>
             {isPending ? (
@@ -112,20 +114,22 @@ export default function ReviewsPage () {
                 <ul className="records-list">
                     {reviews.map((record) => (
                         <li className="record-card" key = {record.id}>
+                            <MoviePoster src={record.posterUrl} title={record.title} />
                             <h2>
                                 <a
                                     className="record-title-link"
-                                    href={`https://pedia.watcha.com/ko/search?query=${encodeURIComponent(record.movieNm)}`}
+                                    href={`https://pedia.watcha.com/ko/search?query=${encodeURIComponent(record.title)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    aria-label={`${record.movieNm} — 왓챠피디아 검색 (새 탭)`}
+                                    aria-label={`${record.title} — 왓챠피디아 검색 (새 탭)`}
                                 >
-                                    {record.movieNm} <span aria-hidden="true">↗</span>
+                                    {record.title} <span aria-hidden="true">↗</span>
                                 </a>
                             </h2>
-                            <p className="record-director">감독 : {record.director || "정보 없음"}</p>
+                            <p className="record-director">감독 : {record.directorNm || "정보 없음"}</p>
+                            <p className="record-director">배우: {record.actorNames?.slice(0, 5).join(", ") || "정보 없음"}</p>
                             <p className = "record-genre">장르 : {record.genre}</p>
-                            <p className = "record-openDt">개봉 날짜 : {record.openDt}</p>
+                            <p className = "record-openDt">개봉일 : {record.repRlsDate}</p>
                             {editingId === record.id ? (
                                 <form className="record-edit" onSubmit={(e) => handleUpdate(e, record.id)}>
                                     <label className="review-field">
@@ -179,7 +183,7 @@ export default function ReviewsPage () {
                                 onClick={() => handleEdit(record)}
                                 disabled={editingId !== null || deletingId !== null}
                             >
-                                수정 
+                                수정
                             </button>
                             <button
                                 type="button"
